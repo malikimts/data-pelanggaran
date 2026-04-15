@@ -65,24 +65,26 @@ function tambahData() {
   let kelas = document.getElementById("kelas").value;
   let pelanggaran = document.getElementById("pelanggaran").value;
 
-  if (!nama || !kelas || !pelanggaran) return alert("Isi semua!");
-
-  let siswa = data.find(d => d.nama === nama);
-
-  if (siswa) {
-    siswa.total++;
-    siswa.riwayat.push(pelanggaran);
-  } else {
-    data.push({
-      nama,
-      kelas,
-      total: 1,
-      riwayat: [pelanggaran]
-    });
+  if (!nama || !kelas || !pelanggaran) {
+    alert("Isi semua!");
+    return;
   }
 
-  simpan();
-  tampil();
+  fetch("https://script.google.com/macros/s/AKfycbyC-TXvqu5PpZFqxVU1RSISYSUzuDSQV8VNumTdT4blwNp60AIqJDTPtomxKTzflG-VYQ/exec", {
+    method: "POST",
+    body: JSON.stringify({
+      nama: nama,
+      kelas: kelas,
+      pelanggaran: pelanggaran
+    })
+  })
+  .then(response => response.text())
+  .then(data => {
+    alert("Data berhasil dikirim!");
+  })
+  .catch(error => {
+    alert("Error: " + error);
+  });
 }
 
 function hapus(index) {
