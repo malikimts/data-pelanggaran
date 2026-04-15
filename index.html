@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Pelanggaran Siswa</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    h1 { text-align: center; }
+    input, button {
+      padding: 8px;
+      margin: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+    .danger {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<h1>📋 Pelanggaran Siswa</h1>
+
+<input type="text" id="nama" placeholder="Nama">
+<input type="text" id="kelas" placeholder="Kelas">
+<input type="text" id="pelanggaran" placeholder="Pelanggaran">
+<button onclick="tambahData()">Tambah</button>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nama</th>
+      <th>Kelas</th>
+      <th>Pelanggaran</th>
+      <th>Total</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody id="tabel"></tbody>
+</table>
+
+<script>
+let data = JSON.parse(localStorage.getItem("dataSiswa")) || [];
+
+function simpan() {
+  localStorage.setItem("dataSiswa", JSON.stringify(data));
+}
+
+function tambahData() {
+  let nama = document.getElementById("nama").value;
+  let kelas = document.getElementById("kelas").value;
+  let pelanggaran = document.getElementById("pelanggaran").value;
+
+  if (!nama || !kelas || !pelanggaran) return alert("Isi semua!");
+
+  let siswa = data.find(d => d.nama === nama);
+
+  if (siswa) {
+    siswa.total++;
+    siswa.riwayat.push(pelanggaran);
+  } else {
+    data.push({
+      nama,
+      kelas,
+      total: 1,
+      riwayat: [pelanggaran]
+    });
+  }
+
+  simpan();
+  tampil();
+}
+
+function hapus(index) {
+  data.splice(index, 1);
+  simpan();
+  tampil();
+}
+
+function tampil() {
+  let tabel = document.getElementById("tabel");
+  tabel.innerHTML = "";
+
+  data.forEach((d, i) => {
+    let merah = d.total >= 3 ? "danger" : "";
+
+    tabel.innerHTML += `
+      <tr class="${merah}">
+        <td>${d.nama}</td>
+        <td>${d.kelas}</td>
+        <td>${d.riwayat[d.riwayat.length-1]}</td>
+        <td>${d.total}</td>
+        <td>
+          <button onclick="hapus(${i})">Hapus</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+tampil();
+</script>
+
+</body>
+</html>
