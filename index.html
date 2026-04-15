@@ -1,46 +1,165 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Pelanggaran Siswa</title>
-  <style>
-    body { font-family: Arial; background:#f4f4f4; padding:20px; }
-    h1 { text-align:center; }
-    input, button { padding:8px; margin:5px; }
-    table { width:100%; border-collapse:collapse; margin-top:20px; background:white; }
-    th, td { border:1px solid #ccc; padding:10px; text-align:center; }
-    .danger { color:red; font-weight:bold; }
-  </style>
+<meta charset="UTF-8">
+<title>Pelanggaran Siswa MTSN</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: linear-gradient(135deg, #1faa59, #76ff7a);
+  padding: 20px;
+  margin: 0;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  animation: fadeIn 0.6s ease;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header img {
+  width: 50px;
+}
+
+h1 {
+  margin: 0;
+}
+
+.slogan {
+  text-align: center;
+  font-style: italic;
+  color: #2e7d32;
+  margin-top: 10px;
+}
+
+input, select {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 15px;
+  border: none;
+  background: #1faa59;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0f8a3c;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th {
+  background: #1faa59;
+  color: white;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+tr:hover {
+  background: #f1f1f1;
+}
+
+.danger {
+  background: #ffdddd;
+  color: red;
+  font-weight: bold;
+}
+
+.total-box {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+@keyframes fadeIn {
+  from {opacity:0;}
+  to {opacity:1;}
+}
+</style>
 </head>
+
 <body>
 
-<h1>📋 Pelanggaran Siswa</h1>
+<div class="container">
+
+<div class="header">
+  <!-- LOGO -->
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Logo_Kementerian_Agama.svg/512px-Logo_Kementerian_Agama.svg.png">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo_OSIS.svg">
+  <h1>Pelanggaran Siswa MTSN Kota Madiun</h1>
+</div>
+
+<div class="slogan">
+  "Disiplin hari ini, sukses di masa depan. Jangan melanggar aturan!"
+</div>
+
+<!-- PILIH KAMPUS -->
+<select id="kampus">
+  <option value="kampus1">Kampus 1</option>
+  <option value="kampus3">Kampus 3</option>
+</select>
+
+<br>
 
 <input type="text" id="nama" placeholder="Nama">
 <input type="text" id="kelas" placeholder="Kelas">
 <input type="text" id="pelanggaran" placeholder="Pelanggaran">
 <button onclick="tambahData()">Tambah</button>
 
+<br>
+
+<input type="text" id="search" placeholder="🔍 Cari nama..." onkeyup="filterData()">
+
+<div class="total-box" id="total"></div>
+
 <table>
-  <thead>
-    <tr>
-      <th>Nama</th>
-      <th>Kelas</th>
-      <th>Pelanggaran</th>
-      <th>Total</th>
-    </tr>
-  </thead>
-  <tbody id="tabel"></tbody>
+<thead>
+<tr>
+<th>Nama</th>
+<th>Kelas</th>
+<th>Pelanggaran</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody id="tabel"></tbody>
 </table>
+
+</div>
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbxGOh1v4hE-j-cXjk1GzvpCHsyBCtWGoWRuUiHOAgWmj83AZ6arHVrBraw8dJiuruv7/exec";
 
-// kirim data
+let semuaData = [];
+
+// KIRIM DATA
 function tambahData() {
   let nama = document.getElementById("nama").value;
   let kelas = document.getElementById("kelas").value;
   let pelanggaran = document.getElementById("pelanggaran").value;
+  let kampus = document.getElementById("kampus").value;
 
   if (!nama || !kelas || !pelanggaran) {
     alert("Isi semua!");
@@ -49,7 +168,7 @@ function tambahData() {
 
   fetch(API, {
     method: "POST",
-    body: JSON.stringify({ nama, kelas, pelanggaran })
+    body: JSON.stringify({ nama, kelas, pelanggaran, kampus })
   })
   .then(() => {
     alert("Data masuk!");
@@ -57,43 +176,69 @@ function tambahData() {
   });
 }
 
-// ambil data
+// AMBIL DATA
 function ambilData() {
   fetch(API)
     .then(res => res.json())
     .then(data => {
-      let tabel = document.getElementById("tabel");
-      tabel.innerHTML = "";
-
-      let hitung = {};
-
-      data.slice(1).forEach(d => {
-        let nama = d[0];
-        if (!hitung[nama]) hitung[nama] = 0;
-        hitung[nama]++;
-      });
-
-      data.slice(1).forEach(d => {
-        let nama = d[0];
-        let kelas = d[1];
-        let pelanggaran = d[2];
-        let total = hitung[nama];
-
-        let merah = total >= 3 ? "danger" : "";
-
-        tabel.innerHTML += `
-          <tr class="${merah}">
-            <td>${nama}</td>
-            <td>${kelas}</td>
-            <td>${pelanggaran}</td>
-            <td>${total}</td>
-          </tr>
-        `;
-      });
+      semuaData = data.slice(1);
+      tampilkanData();
     });
 }
 
-// auto jalan + auto refresh
+// TAMPILKAN DATA
+function tampilkanData() {
+  let kampusDipilih = document.getElementById("kampus").value;
+
+  let tabel = document.getElementById("tabel");
+  tabel.innerHTML = "";
+
+  let hitung = {};
+  let totalSemua = 0;
+
+  semuaData.forEach(d => {
+    let nama = d[0];
+    if (!hitung[nama]) hitung[nama] = 0;
+    hitung[nama]++;
+  });
+
+  semuaData.forEach(d => {
+    let nama = d[0];
+    let kelas = d[1];
+    let pelanggaran = d[2];
+    let total = hitung[nama];
+
+    totalSemua++;
+
+    let merah = total >= 3 ? "danger" : "";
+
+    tabel.innerHTML += `
+      <tr class="${merah}">
+        <td>${nama}</td>
+        <td>${kelas}</td>
+        <td>${pelanggaran}</td>
+        <td>${total}</td>
+      </tr>
+    `;
+  });
+
+  document.getElementById("total").innerText =
+    "Total Pelanggaran: " + totalSemua;
+}
+
+// SEARCH
+function filterData() {
+  let keyword = document.getElementById("search").value.toLowerCase();
+
+  let hasil = semuaData.filter(d =>
+    d[0].toLowerCase().includes(keyword)
+  );
+
+  semuaData = hasil;
+  tampilkanData();
+}
+
+// AUTO REFRESH
 ambilData();
 setInterval(ambilData, 3000);
 </script>
