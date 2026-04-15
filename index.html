@@ -22,20 +22,30 @@ body {
   animation: fadeIn 0.6s ease;
 }
 
+/* HEADER */
 .header {
-  display: flex;"halo anjing"
+  display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
+  position: relative;
 }
 
-.header img {
-  width: 50px;
+.logo {
+  position: absolute;
+  left: 0;
+  display: flex;
+  gap: 5px;
+}
+
+.logo img {
+  width: 45px;
 }
 
 h1 {
   margin: 0;
 }
 
+/* slogan */
 .slogan {
   text-align: center;
   font-style: italic;
@@ -43,7 +53,20 @@ h1 {
   margin-top: 10px;
 }
 
-input, select {
+/* animasi */
+.animasi {
+  text-align: center;
+  margin: 10px;
+  animation: naikTurun 2s infinite;
+}
+
+@keyframes naikTurun {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0); }
+}
+
+input {
   padding: 10px;
   margin: 5px;
   border-radius: 8px;
@@ -105,10 +128,12 @@ tr:hover {
 
 <div class="container">
 
+<!-- HEADER -->
 <div class="header">
-  <!-- LOGO -->
-  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Logo_Kementerian_Agama.svg/512px-Logo_Kementerian_Agama.svg.png">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo_OSIS.svg">
+  <div class="logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Logo_Kementerian_Agama.svg/512px-Logo_Kementerian_Agama.svg.png">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo_OSIS.svg">
+  </div>
   <h1>Pelanggaran Siswa MTSN Kota Madiun</h1>
 </div>
 
@@ -116,11 +141,17 @@ tr:hover {
   "Disiplin hari ini, sukses di masa depan. Jangan melanggar aturan!"
 </div>
 
+<!-- ANIMASI -->
+<div class="animasi">
+  <img src="https://media.tenor.com/8QxjZlGQXyQAAAAi/school-student.gif" width="120">
+</div>
+
 <!-- PILIH KAMPUS -->
-<select id="kampus">
-  <option value="kampus1">Kampus 1</option>
-  <option value="kampus3">Kampus 3</option>
-</select>
+<div>
+  <b>Pilih Kampus:</b><br>
+  <input type="radio" name="kampus" value="kampus1" checked> Kampus 1  
+  <input type="radio" name="kampus" value="kampus3"> Kampus 3  
+</div>
 
 <br>
 
@@ -159,7 +190,7 @@ function tambahData() {
   let nama = document.getElementById("nama").value;
   let kelas = document.getElementById("kelas").value;
   let pelanggaran = document.getElementById("pelanggaran").value;
-  let kampus = document.getElementById("kampus").value;
+  let kampus = document.querySelector('input[name="kampus"]:checked').value;
 
   if (!nama || !kelas || !pelanggaran) {
     alert("Isi semua!");
@@ -188,7 +219,9 @@ function ambilData() {
 
 // TAMPILKAN DATA
 function tampilkanData() {
-  let kampusDipilih = document.getElementById("kampus").value;
+  let kampusDipilih = document.querySelector('input[name="kampus"]:checked').value;
+
+  let dataFilter = semuaData.filter(d => d[4] == kampusDipilih);
 
   let tabel = document.getElementById("tabel");
   tabel.innerHTML = "";
@@ -196,13 +229,13 @@ function tampilkanData() {
   let hitung = {};
   let totalSemua = 0;
 
-  semuaData.forEach(d => {
+  dataFilter.forEach(d => {
     let nama = d[0];
     if (!hitung[nama]) hitung[nama] = 0;
     hitung[nama]++;
   });
 
-  semuaData.forEach(d => {
+  dataFilter.forEach(d => {
     let nama = d[0];
     let kelas = d[1];
     let pelanggaran = d[2];
