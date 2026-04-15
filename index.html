@@ -19,7 +19,6 @@ body {
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  animation: fadeIn 0.6s ease;
 }
 
 /* HEADER */
@@ -62,11 +61,11 @@ h1 {
 
 @keyframes naikTurun {
   0% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+  50% { transform: translateY(-8px); }
   100% { transform: translateY(0); }
 }
 
-input {
+input, select {
   padding: 10px;
   margin: 5px;
   border-radius: 8px;
@@ -116,11 +115,6 @@ tr:hover {
   margin-top: 10px;
   font-weight: bold;
 }
-
-@keyframes fadeIn {
-  from {opacity:0;}
-  to {opacity:1;}
-}
 </style>
 </head>
 
@@ -131,6 +125,7 @@ tr:hover {
 <!-- HEADER -->
 <div class="header">
   <div class="logo">
+    <!-- GANTI kalau punya logo sendiri -->
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Logo_Kementerian_Agama.svg/512px-Logo_Kementerian_Agama.svg.png">
     <img src="https://upload.wikimedia.org/wikipedia/commons/3/3a/Logo_OSIS.svg">
   </div>
@@ -143,21 +138,30 @@ tr:hover {
 
 <!-- ANIMASI -->
 <div class="animasi">
-  <img src="https://media.tenor.com/8QxjZlGQXyQAAAAi/school-student.gif" width="120">
+  <img src="https://cdn-icons-png.flaticon.com/512/3135/3135755.png" width="100">
 </div>
 
-<!-- PILIH KAMPUS -->
-<div>
-  <b>Pilih Kampus:</b><br>
-  <input type="radio" name="kampus" value="kampus1" checked> Kampus 1  
-  <input type="radio" name="kampus" value="kampus3"> Kampus 3  
-</div>
+<!-- PILIH KAMPUS (BALIK KE ATAS) -->
+<select id="kampus">
+  <option value="kampus1">Kampus 1</option>
+  <option value="kampus3">Kampus 3</option>
+</select>
 
 <br>
 
 <input type="text" id="nama" placeholder="Nama">
 <input type="text" id="kelas" placeholder="Kelas">
-<input type="text" id="pelanggaran" placeholder="Pelanggaran">
+
+<!-- PELANGGARAN + OPSI -->
+<select id="opsiPelanggaran">
+  <option value="Terlambat">Terlambat</option>
+  <option value="Tidak memakai atribut">Tidak memakai atribut</option>
+  <option value="Rambut tidak rapi">Rambut tidak rapi</option>
+  <option value="Bolos">Bolos</option>
+</select>
+
+<input type="text" id="pelanggaran" placeholder="Detail tambahan (opsional)">
+
 <button onclick="tambahData()">Tambah</button>
 
 <br>
@@ -189,11 +193,14 @@ let semuaData = [];
 function tambahData() {
   let nama = document.getElementById("nama").value;
   let kelas = document.getElementById("kelas").value;
-  let pelanggaran = document.getElementById("pelanggaran").value;
-  let kampus = document.querySelector('input[name="kampus"]:checked').value;
+  let opsi = document.getElementById("opsiPelanggaran").value;
+  let detail = document.getElementById("pelanggaran").value;
+  let kampus = document.getElementById("kampus").value;
 
-  if (!nama || !kelas || !pelanggaran) {
-    alert("Isi semua!");
+  let pelanggaran = opsi + (detail ? " - " + detail : "");
+
+  if (!nama || !kelas) {
+    alert("Isi nama & kelas!");
     return;
   }
 
@@ -217,10 +224,9 @@ function ambilData() {
     });
 }
 
-// TAMPILKAN DATA
+// TAMPILKAN
 function tampilkanData() {
-  let kampusDipilih = document.querySelector('input[name="kampus"]:checked').value;
-
+  let kampusDipilih = document.getElementById("kampus").value;
   let dataFilter = semuaData.filter(d => d[4] == kampusDipilih);
 
   let tabel = document.getElementById("tabel");
@@ -236,20 +242,16 @@ function tampilkanData() {
   });
 
   dataFilter.forEach(d => {
-    let nama = d[0];
-    let kelas = d[1];
-    let pelanggaran = d[2];
-    let total = hitung[nama];
-
+    let total = hitung[d[0]];
     totalSemua++;
 
     let merah = total >= 3 ? "danger" : "";
 
     tabel.innerHTML += `
       <tr class="${merah}">
-        <td>${nama}</td>
-        <td>${kelas}</td>
-        <td>${pelanggaran}</td>
+        <td>${d[0]}</td>
+        <td>${d[1]}</td>
+        <td>${d[2]}</td>
         <td>${total}</td>
       </tr>
     `;
