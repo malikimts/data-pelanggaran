@@ -2,33 +2,14 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Data Pelanggaran Siswa</title>
+  <title>Pelanggaran Siswa</title>
   <style>
-    body {
-      font-family: Arial;
-      background: #f4f4f4;
-      padding: 20px;
-    }
-    h1 { text-align: center; }
-    input, button {
-      padding: 8px;
-      margin: 5px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: white;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: center;
-    }
-    .danger {
-      color: red;
-      font-weight: bold;
-    }
+    body { font-family: Arial; background:#f4f4f4; padding:20px; }
+    h1 { text-align:center; }
+    input, button { padding:8px; margin:5px; }
+    table { width:100%; border-collapse:collapse; margin-top:20px; background:white; }
+    th, td { border:1px solid #ccc; padding:10px; text-align:center; }
+    .danger { color:red; font-weight:bold; }
   </style>
 </head>
 <body>
@@ -53,9 +34,9 @@
 </table>
 
 <script>
-const API = "https://script.google.com/macros/s/AKfycbx6aHeYQsrS80ouQcsc3NRkPN13wVb2FdcmA58891-V-9EM3pWzqxIC8JTs7rLehl1y/exec";
+const API = "https://script.google.com/macros/s/AKfycbxGOh1v4hE-j-cXjk1GzvpCHsyBCtWGoWRuUiHOAgWmj83AZ6arHVrBraw8dJiuruv7/exec";
 
-// 🔴 KIRIM DATA
+// kirim data
 function tambahData() {
   let nama = document.getElementById("nama").value;
   let kelas = document.getElementById("kelas").value;
@@ -68,19 +49,15 @@ function tambahData() {
 
   fetch(API, {
     method: "POST",
-    body: JSON.stringify({
-      nama,
-      kelas,
-      pelanggaran
-    })
+    body: JSON.stringify({ nama, kelas, pelanggaran })
   })
   .then(() => {
-    alert("Data berhasil dikirim!");
-    ambilData(); // refresh data
+    alert("Data masuk!");
+    ambilData();
   });
 }
 
-// 🔥 AMBIL DATA + HITUNG + MERAH
+// ambil data
 function ambilData() {
   fetch(API)
     .then(res => res.json())
@@ -90,14 +67,12 @@ function ambilData() {
 
       let hitung = {};
 
-      // hitung jumlah pelanggaran per nama
       data.slice(1).forEach(d => {
         let nama = d[0];
         if (!hitung[nama]) hitung[nama] = 0;
         hitung[nama]++;
       });
 
-      // tampilkan data
       data.slice(1).forEach(d => {
         let nama = d[0];
         let kelas = d[1];
@@ -118,8 +93,9 @@ function ambilData() {
     });
 }
 
-// jalan saat web dibuka
+// auto jalan + auto refresh
 ambilData();
+setInterval(ambilData, 3000);
 </script>
 
 </body>
