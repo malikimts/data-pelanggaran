@@ -47,19 +47,15 @@
       <th>Kelas</th>
       <th>Pelanggaran</th>
       <th>Total</th>
-      <th>Aksi</th>
     </tr>
   </thead>
   <tbody id="tabel"></tbody>
 </table>
 
 <script>
-let data = JSON.parse(localStorage.getItem("dataSiswa")) || [];
+const API = "https://script.google.com/macros/s/AKfycbx6aHeYQsrS80ouQcsc3NRkPN13wVb2FdcmA58891-V-9EM3pWzqxIC8JTs7rLehl1y/exec";
 
-function simpan() {
-  localStorage.setItem("dataSiswa", JSON.stringify(data));
-}
-
+// 🔴 KIRIM DATA
 function tambahData() {
   let nama = document.getElementById("nama").value;
   let kelas = document.getElementById("kelas").value;
@@ -70,51 +66,60 @@ function tambahData() {
     return;
   }
 
-  fetch("https://script.google.com/macros/s/AKfycbykKR6X74oJZ1W6D7-B_dlCWYrZ_dOho8bWpPtMg7ZTWZcFY-3ws8pYha7U30GbwEVh/exec", {
+  fetch(API, {
     method: "POST",
     body: JSON.stringify({
-      nama: nama,
-      kelas: kelas,
-      pelanggaran: pelanggaran
+      nama,
+      kelas,
+      pelanggaran
     })
   })
-  .then(response => response.text())
-  .then(data => {
+  .then(() => {
     alert("Data berhasil dikirim!");
-  })
-  .catch(error => {
-    alert("Error: " + error);
+    ambilData(); // refresh data
   });
 }
 
-function hapus(index) {
-  data.splice(index, 1);
-  simpan();
-  tampil();
+// 🔥 AMBIL DATA + HITUNG + MERAH
+function ambilData() {
+  fetch(API)
+    .then(res => res.json())
+    .then(data => {
+      let tabel = document.getElementById("tabel");
+      tabel.innerHTML = "";
+
+      let hitung = {};
+
+      // hitung jumlah pelanggaran per nama
+      data.slice(1).forEach(d => {
+        let nama = d[0];
+        if (!hitung[nama]) hitung[nama] = 0;
+        hitung[nama]++;
+      });
+
+      // tampilkan data
+      data.slice(1).forEach(d => {
+        let nama = d[0];
+        let kelas = d[1];
+        let pelanggaran = d[2];
+        let total = hitung[nama];
+
+        let merah = total >= 3 ? "danger" : "";
+
+        tabel.innerHTML += `
+          <tr class="${merah}">
+            <td>${nama}</td>
+            <td>${kelas}</td>
+            <td>${pelanggaran}</td>
+            <td>${total}</td>
+          </tr>
+        `;
+      });
+    });
 }
 
-function tampil() {
-  let tabel = document.getElementById("tabel");
-  tabel.innerHTML = "";
-
-  data.forEach((d, i) => {
-    let merah = d.total >= 3 ? "danger" : "";
-
-    tabel.innerHTML += `
-      <tr class="${merah}">
-        <td>${d.nama}</td>
-        <td>${d.kelas}</td>
-        <td>${d.riwayat[d.riwayat.length-1]}</td>
-        <td>${d.total}</td>
-        <td>
-          <button onclick="hapus(${i})">Hapus</button>
-        </td>
-      </tr>
-    `;
-  });
-}
-
-tampil();
+// jalan saat web dibuka
+ambilData();
 </script>
 
 </body>
