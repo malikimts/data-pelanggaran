@@ -140,7 +140,12 @@ tr:hover {
 <br>
 
 <input type="text" id="nama" placeholder="Nama">
-<input type="text" id="kelas" placeholder="Kelas">
+
+<select id="kelas">
+  <option value="kelas7">kelas 7</option>
+  <option value="kelas8">kelas 8</option>
+  <option value="kelas9">kelas 9</option>
+  
 <input type="text" id="pelanggaran" placeholder="Pelanggaran">
 <button onclick="tambahData()">Tambah</button>
 
@@ -166,6 +171,7 @@ tr:hover {
 
 <script>
 const API = "https://script.google.com/macros/s/AKfycbyoI98imgSwntdcdJC6qADUMJob0zi8VOM5UzXiQPB4jW0kb1opO5uysbAt5cutkxlw/exec";
+
 
 let semuaData = [];
 
